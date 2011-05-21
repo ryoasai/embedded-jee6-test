@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<parent>
+		<artifactId>embedded-jee6-test-parent</artifactId>
+		<groupId>com.github.ryoasai</groupId>
+		<version>1.0-SNAPSHOT</version>
+		<relativePath>../embedded-jee6-test-parent</relativePath>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>embedded-jee6-test-jboss</artifactId>
+	<packaging>jar</packaging>
+	<name>Embedded EJB test for JBoss6</name>
+
+	<properties>
+		<!-- The target version of AS to be used -->
+		<version.org.jboss.jbossas>6.0.0.Final</version.org.jboss.jbossas>
+
+		<!-- JBOSS_HOME (We'll unpack into here -->
+		<JBOSS_HOME>${project.build.directory}/jboss-${version.org.jboss.jbossas}</JBOSS_HOME>
+	</properties>
+
+	<!-- We also need to place the AS depchain into the "dependencyManagement" 
+		section in import scope so that Maven respects the "exclusion" elements configured -->
+	<dependencyManagement>
+		<dependencies>
+
+			<!-- org.jboss.jbossas -->
+			<dependency>
+				<groupId>org.jboss.jbossas</groupId>
+				<artifactId>jboss-as-depchain</artifactId>
+				<version>${version.org.jboss.jbossas}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.github.ryoasai</groupId>
+			<artifactId>embedded-jee6-test</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jboss.jbossas</groupId>
+			<artifactId>jboss-as-depchain</artifactId>
+			<version>${version.org.jboss.jbossas}</version>
+			<type>pom</type>
+		</dependency>
+	</dependencies>
+	<build>
+		<plugins>
+			<!-- Get AS and put into "target" -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>pre-integration-test</phase> <!-- So run before testing -->
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>org.jboss.jbossas</groupId>
+									<artifactId>jboss-as-distribution</artifactId>
+									<version>${version.org.jboss.jbossas}</version>
+									<type>zip</type>
+									<overWrite>false</overWrite>
+									<outputDirectory>${project.build.directory}</outputDirectory>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>integration-test</id>
+						<phase>integration-test</phase>
+						<goals>
+							<goal>test</goal>
+						</goals>
+						<configuration>
+							<additionalClasspathElements>
+								<additionalClasspathElement>${JBOSS_HOME}/client/jbossws-native-client.jar</additionalClasspathElement>
+							</additionalClasspathElements>
+
+							<redirectTestOutputToFile>true</redirectTestOutputToFile>
+							<trimStackTrace>false</trimStackTrace>
+							<printSummary>true</printSummary>
+							<includes>
+								<include>**/*Test.java</include>
+							</includes>
+							<forkMode>always</forkMode>
+							<!-- MaxPermSize Required to bump the space for relective data like 
+								classes, methods, etc. EMB-41, EMB-74. Endorsed required for things like 
+								WS support (EMB-61) -->
+							<argLine>-Xmx512m -XX:MaxPermSize=256m
+								-Djava.net.preferIPv4Stack=true
+								-Djava.util.logging.manager=org.jboss.logmanager.LogManager
+								-Djava.endorsed.dirs=${JBOSS_HOME}/lib/endorsed
+								-Djboss.home=${JBOSS_HOME}
+								-Djboss.boot.server.log.dir=${JBOSS_HOME}</argLine>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

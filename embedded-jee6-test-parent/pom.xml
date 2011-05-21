@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.github.ryoasai</groupId>
+	<artifactId>embedded-jee6-test-parent</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>Spring MVC extensions</name>
+	<url>http://www.springframework.org</url>
+	<description>
+		<![CDATA[
+      This project provides some useful Spring MVC extensions.
+    ]]>
+	</description>
+	<modules>
+		<module>../embedded-jee6-test</module>
+		<module>../embedded-jee6-test-glassfish</module>
+		<module>../embedded-jee6-test-jboss</module>
+		<module>../embedded-jee6-test-jeeunit</module>
+	</modules>
+	<properties>
+		<maven.test.failure.ignore>true</maven.test.failure.ignore>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>org.jboss.repository.release</id>
+			<name>JBoss Maven Release Repository</name>
+			<url>https://repository.jboss.org/nexus/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>glassfish-repo-archive</id>
+			<name>Nexus repository collection for Glassfish</name>
+			<url>http://maven.glassfish.org/content/groups/glassfish</url>
+			<snapshots>
+				<updatePolicy>never</updatePolicy>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>sonatype-oss-staging</id>
+			<name>Sonatype OSS Staging Repository</name>
+			<url>http://oss.sonatype.org/content/groups/staging</url>
+		</repository>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>central</id>
+			<name>Maven Repository Switchboard</name>
+			<url>http://repo1.maven.org/maven2</url>
+		</repository>
+
+	</repositories>
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<inherited>false</inherited>
+					<configuration>
+						<descriptorRefs>
+							<descriptorRef>project</descriptorRef>
+						</descriptorRefs>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>2.3.2</version>
+					<configuration>
+						<source>1.6</source>
+						<target>1.6</target>
+						<encoding>utf-8</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-resources-plugin</artifactId>
+					<version>2.4.2</version>
+					<configuration>
+						<encoding>UTF-8</encoding>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-surefire-plugin</artifactId>
+					<version>2.8</version>
+					<configuration>
+						<!--forkMode>pertest</forkMode -->
+						<includes>
+							<include>**/*Tests.java</include>
+						</includes>
+						<excludes>
+							<exclude>**/Abstract*.java</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>aspectj-maven-plugin</artifactId>
+					<version>1.3.1</version>
+					<executions>
+						<execution>
+							<goals>
+								<goal>compile</goal>
+								<goal>test-compile</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<outxml>true</outxml>
+						<source>1.6</source>
+						<target>1.6</target>
+						<encoding>utf-8</encoding>
+					</configuration>
+				</plugin>
+
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>2.1.1</version>
+					<configuration>
+						<warName>mvc-basic</warName>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+
+		</plugins>
+	</build>
+
+
+</project>
